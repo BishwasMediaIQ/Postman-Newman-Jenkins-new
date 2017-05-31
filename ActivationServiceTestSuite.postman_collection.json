@@ -1,0 +1,650 @@
+{
+	"variables": [],
+	"info": {
+		"name": "ActivationServiceTestSuite",
+		"_postman_id": "1ce914d4-066c-31a2-07ce-c3b361af3814",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "4c_Possitive Scenarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//Status code validation for a succcessful request",
+							"tests[\"Status code is 200 for a correctly formated request\"] = responseCode.code === 200;",
+							"",
+							"//Schema Validation",
+							"var schema = {",
+							"    \"$schema\": \"http://json-schema.org/draft-04/schema#\",",
+							"    \"definitions\": {},",
+							"    \"id\": \"http://example.com/example.json\",",
+							"    \"properties\": {",
+							"        \"activation_service_execution_time\": {",
+							"            \"id\": \"/properties/activation_service_execution_time\",",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"apd_get_response\": {",
+							"            \"id\": \"/properties/apd_get_response\",",
+							"            \"properties\": {",
+							"                \"execution_time\": {",
+							"                    \"id\": \"/properties/apd_get_response/properties/execution_time\",",
+							"                    \"type\": \"integer\"",
+							"                },",
+							"                \"message\": {",
+							"                    \"id\": \"/properties/apd_get_response/properties/message\",",
+							"                    \"properties\": {",
+							"                        \"seg_id\": {",
+							"                            \"id\": \"/properties/apd_get_response/properties/message/properties/seg_id\",",
+							"                            \"type\": \"integer\"",
+							"                        },",
+							"                        \"seg_ttl\": {",
+							"                            \"id\": \"/properties/apd_get_response/properties/message/properties/seg_ttl\",",
+							"                            \"type\": \"string\"",
+							"                        },",
+							"                        \"seg_val\": {",
+							"                            \"id\": \"/properties/apd_get_response/properties/message/properties/seg_val\",",
+							"                            \"type\": \"integer\"",
+							"                        }",
+							"                    },",
+							"                    \"type\": \"object\"",
+							"                },",
+							"                \"status_code\": {",
+							"                    \"id\": \"/properties/apd_get_response/properties/status_code\",",
+							"                    \"type\": \"integer\"",
+							"                }",
+							"            },",
+							"            \"type\": \"object\"",
+							"        },",
+							"        \"apd_post_response\": {",
+							"            \"id\": \"/properties/apd_post_response\",",
+							"            \"properties\": {",
+							"                \"execution_time\": {",
+							"                    \"id\": \"/properties/apd_post_response/properties/execution_time\",",
+							"                    \"type\": \"integer\"",
+							"                },",
+							"                \"message\": {",
+							"                    \"id\": \"/properties/apd_post_response/properties/message\",",
+							"                    \"type\": \"string\"",
+							"                },",
+							"                \"status_code\": {",
+							"                    \"id\": \"/properties/apd_post_response/properties/status_code\",",
+							"                    \"type\": \"integer\"",
+							"                }",
+							"            },",
+							"            \"type\": \"object\"",
+							"        },",
+							"        \"message\": {",
+							"            \"id\": \"/properties/message\",",
+							"            \"type\": \"string\"",
+							"        }",
+							"    },",
+							"    \"type\": \"object\"",
+							"};",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Schema validated successfully\"] = tv4.validate(jsonData, schema);",
+							"if(tv4.error=\"null\"){",
+							"    console.log(\"Schema validated successfully\");}",
+							"else{",
+							"    console.log(\"Validation failed for : \" +tv4.error);",
+							"    ",
+							"}",
+							"",
+							"//verifying the duration against the mentioned time by user",
+							"//verifying the duration against the mentioned time by user",
+							"",
+							"var reqDuration=postman.getEnvironmentVariable(\"Duration\").substr(2,3);",
+							"if(reqDuration.includes(\"S\")){",
+							"reqDurationUpdate=reqDuration.charAt(0)+\"s\";",
+							"tests[\"Checking the activated time in response against the duration mentioned by the user\"] = jsonData.apd_get_response.message.seg_ttl === reqDurationUpdate;",
+							"console.log(\"The segment was activated for : \"+jsonData.apd_get_response.message.seg_ttl);",
+							"tests[\"Checking the response message against the duration mentioned by the user\"] = responseBody.has(\"segment activated for \"+reqDurationUpdate);",
+							"}",
+							"else if(reqDuration.includes(\"M\")){",
+							"    reqDurationUpdate=reqDuration.charAt(0)*60;",
+							"    response=reqDuration.charAt(0)+\"m0s\";",
+							"    reqDurationUpdate=reqDurationUpdate+\"s\";",
+							"    //console.log(reqDurationUpdate);",
+							"   ",
+							"tests[\"Checking the activated time in response against the duration mentioned by the user\"] = jsonData.apd_get_response.message.seg_ttl === response;",
+							"console.log(\"For the 4c request,the segment was activated for : \"+jsonData.apd_get_response.message.seg_ttl);",
+							"tests[\"Checking the response message against the duration mentioned by the user\"] = responseBody.has(\"segment activated for \"+reqDurationUpdate);",
+							"}",
+							"",
+							"",
+							"//Checking the activation service execution time",
+							"var jsonData = JSON.parse(responseBody);",
+							"var execution_time = jsonData.activation_service_execution_time;",
+							"tests[\"Activation sevice execution time within milliseconds\"] = execution_time < 1000;"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var date = new Date();\r",
+							"var ISO_Time = date.toISOString();\r",
+							"postman.setEnvironmentVariable(\"currentTime\", ISO_Time);\r",
+							"\r",
+							"var time = \"PT1M\"\r",
+							"postman.setEnvironmentVariable(\"Duration\", time);\r",
+							"console.log(\"The start time of the 4c request was -\"+ISO_Time);\r",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/4c/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"type\": \"activation\",\n   \"timestamp\": \"{{currentTime}}\",\n   \"extension\": false,\n   \"duration\": \"{{Duration}}\",\n   \"reference\": {\n       \"Id\": \"7854657\",\n       \"dsp\": \"Appnexus\",\n       \"country\": \"United Kingdom\"\n   },\n   \"channel\": {\n       \"type\": \"sports\",\n       \"id\": \"nba\",\n       \"metadata\": {\n           \"name\": \"NBA\",\n           \"category\": \"ProfessionalBasketball\"\n       }\n   },\n   \"detections\": [\n       {\n           \"type\": \"sports-event\",\n           \"trigger\": \"HomeTeamScores\",\n           \"metadata\": {\n               \"evenId\": \"dunk_made\",\n               \"name\": \"DunkMade\",\n               \"group\": \"Scoring\",\n               \"team\": \"ChicagoBulls\",\n               \"player\": \"MichaelJordan\"\n           }\n       }\n   ]\n}"
+				},
+				"description": "4C"
+			},
+			"response": []
+		},
+		{
+			"name": "RTA_Possitive Scenarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//Status code validation for a succcessful request",
+							"tests[\"Status code is 200 for a correctly formated request\"] = responseCode.code === 200;",
+							"",
+							"//Schema validation",
+							"var schema = {",
+							"    \"$schema\": \"http://json-schema.org/draft-04/schema#\",",
+							"    \"definitions\": {},",
+							"    \"id\": \"http://example.com/example.json\",",
+							"    \"properties\": {",
+							"        \"country\": {",
+							"            \"id\": \"/properties/country\",",
+							"            \"type\": \"string\"",
+							"        },",
+							"        \"endDate\": {",
+							"            \"id\": \"/properties/endDate\",",
+							"            \"type\": \"string\"",
+							"        },",
+							"        \"modifierValue\": {",
+							"            \"id\": \"/properties/modifierValue\",",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"segmentId\": {",
+							"            \"id\": \"/properties/segmentId\",",
+							"            \"type\": \"string\"",
+							"        },",
+							"        \"startDate\": {",
+							"            \"id\": \"/properties/startDate\",",
+							"            \"type\": \"string\"",
+							"        }",
+							"    },",
+							"    \"type\": \"object\"",
+							"}",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Schema validated successfully\"] = tv4.validate(jsonData, schema);",
+							"if(tv4.error=\"null\"){",
+							"    console.log(\"Schema validated successfully\");}",
+							"else{",
+							"    console.log(\"Validation failed for : \" +tv4.error);",
+							"    ",
+							"}",
+							"",
+							"//verifying the duration against the mentioned time by user",
+							"var jsonData = JSON.parse(responseBody);",
+							"var st = postman.getEnvironmentVariable(\"StartTime\");",
+							"var st = new Date(st).getTime();",
+							"var et = postman.getEnvironmentVariable(\"EndTime\");",
+							"et = new Date(et).getTime();",
+							"var time = et - st ;",
+							"//console.log(st);",
+							"//console.log(et);",
+							"time = parseInt(time/1000);",
+							"function formatTime(seconds) {",
+							"    //console.log(\"Received sec \" + seconds);",
+							"    var min = seconds/60;",
+							"    var sec = seconds%60;",
+							"    return min+\"m\"+sec+\"s\";",
+							"}",
+							"var ft = formatTime(time);",
+							"//console.log(ft);",
+							"tests[\"Checking the activated time in response against the duration mentioned by the user\"] = jsonData.apd_get_response.message.seg_ttl === \"2m0s\";",
+							"console.log(\"For the RTA request,the segment was activated for : \"+jsonData.apd_get_response.message.seg_ttl);",
+							"",
+							"",
+							"",
+							"//Checking the activation service execution time",
+							"var jsonData = JSON.parse(responseBody);",
+							"var execution_time = jsonData.activation_service_execution_time;",
+							"tests[\"Activation sevice execution time within milliseconds\"] = execution_time < 1000;",
+							"tests[\"Checking the response message against the duration mentioned by the user\"] = responseBody.has(\"segment activated for 120s\");",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var StartDate = new Date();\r",
+							"var ISO_Time = StartDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"StartTime\", ISO_Time);\r",
+							"\r",
+							"console.log(\"Startdate for RTA request is :\" + ISO_Time);\r",
+							"\r",
+							"var EndDate = new Date();\r",
+							"EndDate.setMinutes(EndDate.getMinutes()+2);\r",
+							"var ISO_Time1 = EndDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"EndTime\", ISO_Time1);\r",
+							"\r",
+							"console.log(\"EndDate is for RTA request is :\" + ISO_Time1);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/rta/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n\"segmentId\":\"7854657\",  \n\"modifierValue\":1000, \n\"startDate\":\"{{StartTime}}\",   \n\"endDate\":\"{{EndTime}}\",\n\"country\":\"United States\"\n}"
+				},
+				"description": "RTA"
+			},
+			"response": []
+		},
+		{
+			"name": "4c_Giving wrong segment ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//Providing a wrong segment id",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Throwing an error when user gives an improper segment id\"] = jsonData.apd_post_response.message.has(\"Member does not have access to segment\");",
+							"console.log(\"The message which system displays after providing a wrong segment is : \"+jsonData.apd_post_response.message);"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var date = new Date();\r",
+							"var ISO_Time = date.toISOString();\r",
+							"postman.setEnvironmentVariable(\"currentTime\", ISO_Time);\r",
+							"\r",
+							"var time = \"PT1S\"\r",
+							"postman.setEnvironmentVariable(\"Duration\", time);\r",
+							"//console.log;\r",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/4c/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"type\": \"activation\",\n   \"timestamp\": \"{{currentTime}}\",\n   \"extension\": false,\n   \"duration\": \"{{Duration}}\",\n   \"reference\": {\n       \"Id\": \"785465\",\n       \"dsp\": \"Appnexus\",\n       \"country\": \"United Kingdom\"\n   },\n   \"channel\": {\n       \"type\": \"sports\",\n       \"id\": \"nba\",\n       \"metadata\": {\n           \"name\": \"NBA\",\n           \"category\": \"ProfessionalBasketball\"\n       }\n   },\n   \"detections\": [\n       {\n           \"type\": \"sports-event\",\n           \"trigger\": \"HomeTeamScores\",\n           \"metadata\": {\n               \"evenId\": \"dunk_made\",\n               \"name\": \"DunkMade\",\n               \"group\": \"Scoring\",\n               \"team\": \"ChicagoBulls\",\n               \"player\": \"MichaelJordan\"\n           }\n       }\n   ]\n}"
+				},
+				"description": "4C"
+			},
+			"response": []
+		},
+		{
+			"name": "4c_Giving wrong DSP and Country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//Providing a wrong segment id",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Throwing an error when user gives an improper segment id\"] = jsonData.has(\"Invalid Request\");",
+							"console.log(\"The message which system displays after providing wrong DSP and Country field\"+jsonData);"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var date = new Date();\r",
+							"var ISO_Time = date.toISOString();\r",
+							"postman.setEnvironmentVariable(\"currentTime\", ISO_Time);\r",
+							"\r",
+							"var time = \"PT1S\"\r",
+							"postman.setEnvironmentVariable(\"Duration\", time);\r",
+							"console.log;\r",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/4c/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"type\": \"activation\",\n   \"timestamp\": \"{{currentTime}}\",\n   \"extension\": false,\n   \"duration\": \"{{Duration}}\",\n   \"reference\": {\n       \"Id\": \"7854657\",\n       \"dsp\": \"Appnexu\",\n       \"country\": \"United Kingd\"\n   },\n   \"channel\": {\n       \"type\": \"sports\",\n       \"id\": \"nba\",\n       \"metadata\": {\n           \"name\": \"NBA\",\n           \"category\": \"ProfessionalBasketball\"\n       }\n   },\n   \"detections\": [\n       {\n           \"type\": \"sports-event\",\n           \"trigger\": \"HomeTeamScores\",\n           \"metadata\": {\n               \"evenId\": \"dunk_made\",\n               \"name\": \"DunkMade\",\n               \"group\": \"Scoring\",\n               \"team\": \"ChicagoBulls\",\n               \"player\": \"MichaelJordan\"\n           }\n       }\n   ]\n}"
+				},
+				"description": "4C"
+			},
+			"response": []
+		},
+		{
+			"name": "4c_Giving invalid Starttime",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//Providing a wrong segment id",
+							"",
+							"",
+							"tests[\"When a user gives an invalid timestamp\"] = responseBody.has(\"The request body does not contain a valid timestamp\");",
+							"",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"console.log(\"The message which system displays after providing an invalid Starttime for 4c is : \"+jsonData);"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var StartDate = new Date();\r",
+							"StartDate.setMinutes(StartDate.getMinutes()-5);\r",
+							"var ISO_Time = StartDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"currentTime\", ISO_Time);\r",
+							"\r",
+							"var time = \"PT1S\"\r",
+							"postman.setEnvironmentVariable(\"Duration\", time);\r",
+							"console.log(ISO_Time);\r",
+							"\r",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/4c/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"type\": \"activation\",\n   \"timestamp\": \"{{currentTime}}\",\n   \"extension\": false,\n   \"duration\": \"{{Duration}}\",\n   \"reference\": {\n       \"Id\": \"7854657\",\n       \"dsp\": \"Appnexus\",\n       \"country\": \"United Kingdom\"\n   },\n   \"channel\": {\n       \"type\": \"sports\",\n       \"id\": \"nba\",\n       \"metadata\": {\n           \"name\": \"NBA\",\n           \"category\": \"ProfessionalBasketball\"\n       }\n   },\n   \"detections\": [\n       {\n           \"type\": \"sports-event\",\n           \"trigger\": \"HomeTeamScores\",\n           \"metadata\": {\n               \"evenId\": \"dunk_made\",\n               \"name\": \"DunkMade\",\n               \"group\": \"Scoring\",\n               \"team\": \"ChicagoBulls\",\n               \"player\": \"MichaelJordan\"\n           }\n       }\n   ]\n}"
+				},
+				"description": "4C"
+			},
+			"response": []
+		},
+		{
+			"name": "RTA_Wrong segment_ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//tests[\"Body matches string\"] = responseBody.has(\"Member does not have access to segment\");",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Displaying message,Member does not have access to segment when user enters a wrong segment\"] = jsonData.apd_post_response.message.has(\"Member does not have access to segment\");",
+							"",
+							"console.log(\"Message which the system displays after providing a wrong segment_id for a RTA request is : \"+jsonData.apd_post_response.message)"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var StartDate = new Date();\r",
+							"var ISO_Time = StartDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"StartTime\", ISO_Time);\r",
+							"\r",
+							"\r",
+							"//console.log(\"Startdate is :\" + ISO_Time);\r",
+							"\r",
+							"var EndDate = new Date();\r",
+							"EndDate.setMinutes(EndDate.getMinutes()+2);\r",
+							"var ISO_Time1 = EndDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"EndTime\", ISO_Time1);\r",
+							"\r",
+							"//console.log(\"EndDate is :\" + ISO_Time1);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/rta/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n\"segmentId\":\"785465\",  \n\"modifierValue\":1000, \n\"startDate\":\"{{StartTime}}\",   \n\"endDate\":\"{{EndTime}}\",\n\"country\":\"United States\"\n}"
+				},
+				"description": "RTA"
+			},
+			"response": []
+		},
+		{
+			"name": "RTA_Wrong Starttime",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//tests[\"Body matches string\"] = responseBody.has(\"Member does not have access to segment\");",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Displaying message, when user enters invalid Start date\"] = jsonData.has(\"select date starting from today\");",
+							"console.log(\"Message which the system displays after proving a wrong segment for a RTA request\"+jsonData);"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var StartDate = new Date();\r",
+							"StartDate.setMinutes(StartDate.getMinutes()-5);\r",
+							"var ISO_Time = StartDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"StartTime\", ISO_Time);\r",
+							"\r",
+							"\r",
+							"console.log(\"Startdate is :\" + ISO_Time);\r",
+							"\r",
+							"var EndDate = new Date();\r",
+							"EndDate.setMinutes(EndDate.getMinutes()+2);\r",
+							"var ISO_Time1 = EndDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"EndTime\", ISO_Time1);\r",
+							"\r",
+							"\r",
+							"console.log(\"EndDate is :\" + ISO_Time1);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/rta/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n\"segmentId\":\"785465\",  \n\"modifierValue\":1000, \n\"startDate\":\"{{StartTime}}\",   \n\"endDate\":\"{{EndTime}}\",\n\"country\":\"United States\"\n}"
+				},
+				"description": "RTA"
+			},
+			"response": []
+		},
+		{
+			"name": "RTA_Wrong Endtime",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//tests[\"Body matches string\"] = responseBody.has(\"Member does not have access to segment\");",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Displaying message, when user enters invalid End date\"] = jsonData.has(\"endDate should be after startDate\");",
+							"console.log(\"Message which the system displays after proving a wrong segment for a RTA request\"+jsonData)"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var StartDate = new Date();\r",
+							"var ISO_Time = StartDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"StartTime\", ISO_Time);\r",
+							"\r",
+							"\r",
+							"console.log(\"Startdate is :\" + ISO_Time);\r",
+							"\r",
+							"var EndDate = new Date();\r",
+							"EndDate.setMinutes(EndDate.getMinutes()-5);\r",
+							"var ISO_Time1 = EndDate.toISOString();\r",
+							"postman.setEnvironmentVariable(\"EndTime\", ISO_Time1);\r",
+							"\r",
+							"\r",
+							"console.log(\"EndDate is :\" + ISO_Time1);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.mediaiqdigital.com/staging/sync/rta/apd/activate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "QWxhZGRpbjpPcGVuU2VzYW1l",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n\"segmentId\":\"785465\",  \n\"modifierValue\":1000, \n\"startDate\":\"{{StartTime}}\",   \n\"endDate\":\"{{EndTime}}\",\n\"country\":\"United States\"\n}"
+				},
+				"description": "RTA"
+			},
+			"response": []
+		}
+	]
+}
